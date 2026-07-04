@@ -55,6 +55,7 @@ const App = (() => {
   };
 
   function init() {
+    if (!store.get('mb_users'))      store.set('mb_users', [DEMO_USER]);
     if (!store.get('mb_categories')) store.set('mb_categories', DEFAULT_CATEGORIES);
     if (!store.get('mb_expenses'))   store.set('mb_expenses',   DEMO_EXPENSES);
     if (!store.get('mb_nextId'))     store.set('mb_nextId', 100);
@@ -66,13 +67,39 @@ const App = (() => {
     return id;
   }
 
+  /* ── USERS ───────────────────────────────────────────────── */
+  function getUsers() {
+    return store.get('mb_users') || [DEMO_USER];
+  }
+
+  function emailExists(email) {
+    return getUsers().some(u => u.email.toLowerCase() === email.toLowerCase());
+  }
+
   /* ── AUTH ────────────────────────────────────────────────── */
   function login(email, password) {
-    if (email === DEMO_USER.email && password === DEMO_USER.password) {
-      store.set('mb_session', { email, name: DEMO_USER.name, loginAt: Date.now() });
+    init();
+    const user = getUsers().find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+    if (user) {
+      store.set('mb_session', { email: user.email, name: user.name, loginAt: Date.now() });
       return true;
     }
     return false;
+  }
+
+  function register(name, email, password) {
+    init();
+    if (!name || !email || !password) {
+      return { ok: false, error: 'Veuillez remplir tous les champs.' };
+    }
+    if (emailExists(email)) {
+      return { ok: false, error: 'Un compte existe déjà avec cet e-mail.' };
+    }
+    const users = getUsers();
+    users.push({ name, email, password });
+    store.set('mb_users', users);
+    store.set('mb_session', { email, name, loginAt: Date.now() });
+    return { ok: true };
   }
 
   function logout() {
@@ -135,7 +162,7 @@ const App = (() => {
 
   /* ── PUBLIC API ──────────────────────────────────────────── */
   return {
-    login, logout, isLoggedIn, getUser, requireAuth,
+    login, logout, isLoggedIn, getUser, requireAuth, register, emailExists,
     getExpenses, addExpense, updateExpense, deleteExpense,
     getCategories, addCategory, updateCategory, deleteCategory
   };
