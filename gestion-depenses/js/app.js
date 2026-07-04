@@ -14,14 +14,14 @@ const App = (() => {
 
   /* ── DEFAULT CATEGORIES ──────────────────────────────────── */
   const DEFAULT_CATEGORIES = [
-    { id: 1, name: 'Alimentation', description: 'Courses, supermarché, restaurants', color: '#F97316', icon: 'fa-solid fa-utensils', isDefault: true },
-    { id: 2, name: 'Transport',    description: 'Taxi, bus, carburant, péages',        color: '#5C7AEA', icon: 'fa-solid fa-car',      isDefault: true },
-    { id: 3, name: 'Logement',     description: 'Loyer, eau, électricité, internet',   color: '#10B981', icon: 'fa-solid fa-house',    isDefault: true },
-    { id: 4, name: 'Santé',        description: 'Médecin, pharmacie, analyses',        color: '#EF4444', icon: 'fa-solid fa-heart-pulse', isDefault: true },
-    { id: 5, name: 'Loisirs',      description: 'Cinéma, café, sorties culturelles',   color: '#8B5CF6', icon: 'fa-solid fa-film',     isDefault: true },
-    { id: 6, name: 'Internet',     description: 'Wi-Fi, abonnement mobile',            color: '#06B6D4', icon: 'fa-solid fa-wifi',     isDefault: true },
-    { id: 7, name: 'Éducation',    description: 'Livres, formations, cours',           color: '#F59E0B', icon: 'fa-solid fa-book',     isDefault: true },
-    { id: 8, name: 'Autres',       description: 'Dépenses diverses non catégorisées',  color: '#6B7280', icon: 'fa-solid fa-ellipsis', isDefault: true }
+    { id: 1, name: 'Alimentation', description: 'Courses, supermarché, restaurants', color: '#F97316', icon: '🍽️', isDefault: true },
+    { id: 2, name: 'Transport',    description: 'Taxi, bus, carburant, péages',        color: '#5C7AEA', icon: '🚗', isDefault: true },
+    { id: 3, name: 'Logement',     description: 'Loyer, eau, électricité, internet',   color: '#10B981', icon: '🏠', isDefault: true },
+    { id: 4, name: 'Santé',        description: 'Médecin, pharmacie, analyses',        color: '#EF4444', icon: '❤️', isDefault: true },
+    { id: 5, name: 'Loisirs',      description: 'Cinéma, café, sorties culturelles',   color: '#8B5CF6', icon: '🎬', isDefault: true },
+    { id: 6, name: 'Internet',     description: 'Wi-Fi, abonnement mobile',            color: '#06B6D4', icon: '📶', isDefault: true },
+    { id: 7, name: 'Éducation',    description: 'Livres, formations, cours',           color: '#F59E0B', icon: '📚', isDefault: true },
+    { id: 8, name: 'Autres',       description: 'Dépenses diverses non catégorisées',  color: '#6B7280', icon: '➖', isDefault: true }
   ];
 
   /* ── DEMO DATA ───────────────────────────────────────────── */

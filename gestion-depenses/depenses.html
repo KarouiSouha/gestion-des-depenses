@@ -1,333 +1,309 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MonBudget – Dépenses</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
-  <link href="css/style.css" rel="stylesheet"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonBudget - Dépenses</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="app-layout">
-
-  <!-- Sidebar -->
-  <nav class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-      <span class="brand-icon"><i class="fa-solid fa-wallet"></i></span>
-      <span class="brand-name">MonBudget</span>
-    </div>
-    <ul class="sidebar-nav">
-      <li><a href="dashboard.html"><i class="fa-solid fa-house"></i><span>Tableau de bord</span></a></li>
-      <li><a href="depenses.html" class="active"><i class="fa-solid fa-receipt"></i><span>Dépenses</span></a></li>
-      <li><a href="categories.html"><i class="fa-solid fa-tags"></i><span>Catégories</span></a></li>
-      <li><a href="graphiques.html"><i class="fa-solid fa-chart-pie"></i><span>Graphiques</span></a></li>
+<body>
+<div class="container-fluid">
+<div class="row">
+<!-- ================= MENU ================= -->
+<nav class="col-md-3 col-lg-2 sidebar d-none d-md-block" id="sidebar">
+    <h3 class="text-center mt-3 mb-4">💰 MonBudget</h3>
+    <ul class="nav flex-column">
+        <li class="nav-item"><a href="dashboard.html" class="nav-link">📊 Tableau de bord</a></li>
+        <li class="nav-item"><a href="depenses.html" class="nav-link active">🧾 Dépenses</a></li>
+        <li class="nav-item"><a href="categories.html" class="nav-link">🏷️ Catégories</a></li>
+        <li class="nav-item"><a href="graphiques.html" class="nav-link">📈 Graphiques</a></li>
     </ul>
-    <div class="sidebar-footer">
-      <button class="btn-logout" onclick="App.logout()">
-        <i class="fa-solid fa-right-from-bracket"></i><span>Déconnexion</span>
-      </button>
+    <hr>
+    <button class="btn btn-danger w-100" onclick="App.logout()">🚪 Déconnexion</button>
+</nav>
+<!-- ================= CONTENU ================= -->
+<main class="col-md-9 col-lg-10 main-content">
+<header class="topbar d-flex justify-content-between align-items-center">
+    <button class="btn btn-outline-primary d-md-none" onclick="toggleSidebar()">☰ Menu</button>
+    <h3>🧾 Mes dépenses</h3>
+    <div>Bonjour, <span id="userGreeting"></span> 👋</div>
+</header>
+
+<div class="mt-4">
+<div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+    <div>
+        <h2>Gestion des dépenses</h2>
+        <p class="text-muted">Consultez, ajoutez et gérez toutes vos dépenses.</p>
     </div>
-  </nav>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#expenseModal" onclick="openModal()">➕ Ajouter une dépense</button>
+</div>
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <header class="topbar">
-      <button class="btn-toggle-sidebar" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
-      <div class="topbar-title">Mes Dépenses</div>
-      <div class="topbar-user">
-        <span id="userGreeting"></span>
-        <span class="user-avatar"><i class="fa-solid fa-user"></i></span>
-      </div>
-    </header>
-
-    <div class="page-body">
-      <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
-        <div>
-          <h1 class="page-title">Gestion des dépenses</h1>
-          <p class="page-sub">Consultez, ajoutez et gérez toutes vos dépenses.</p>
+<!-- ================= FILTRES ================= -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">Catégorie</label>
+                <select id="filterCat" class="form-select">
+                    <option value="">Toutes les catégories</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Date début</label>
+                <input type="date" id="filterFrom" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Date fin</label>
+                <input type="date" id="filterTo" class="form-control">
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button class="btn btn-outline-primary" onclick="applyFilters()">Filtrer</button>
+                <button class="btn btn-secondary" onclick="clearFilters()">✖</button>
+            </div>
         </div>
-        <button class="btn btn-primary" onclick="openModal()">
-          <i class="fa-solid fa-plus me-2"></i>Ajouter une dépense
-        </button>
-      </div>
+    </div>
+</div>
 
-      <!-- Filters -->
-      <div class="card-panel mb-4">
-        <div class="panel-body">
-          <div class="row g-3">
-            <div class="col-12 col-md-4">
-              <label class="form-label small">Catégorie</label>
-              <select class="form-select form-select-sm" id="filterCat">
-                <option value="">Toutes les catégories</option>
-              </select>
-            </div>
-            <div class="col-6 col-md-3">
-              <label class="form-label small">Date début</label>
-              <input type="date" class="form-control form-control-sm" id="filterFrom"/>
-            </div>
-            <div class="col-6 col-md-3">
-              <label class="form-label small">Date fin</label>
-              <input type="date" class="form-control form-control-sm" id="filterTo"/>
-            </div>
-            <div class="col-12 col-md-2 d-flex align-items-end gap-2">
-              <button class="btn btn-sm btn-outline-primary w-100" onclick="applyFilters()">Filtrer</button>
-              <button class="btn btn-sm btn-outline-secondary" onclick="clearFilters()" title="Effacer"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Table -->
-      <div class="card-panel">
-        <div class="panel-header">
-          <span><i class="fa-solid fa-receipt me-2"></i>Liste des dépenses</span>
-          <span class="badge-count" id="expenseCount">0</span>
-        </div>
-        <div class="panel-body p-0">
-          <div class="table-responsive">
-            <table class="table table-hover mb-0" id="expenseTable">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Catégorie</th>
-                  <th>Description</th>
-                  <th class="text-end">Montant</th>
-                  <th class="text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="expenseBody">
-                <tr id="emptyRow">
-                  <td colspan="5" class="text-center text-muted py-4">
-                    <i class="fa-solid fa-inbox fa-2x d-block mb-2 opacity-25"></i>
-                    Aucune dépense trouvée.
-                  </td>
-                </tr>
-              </tbody>
+<!-- ================= TABLEAU ================= -->
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>🧾 Liste des dépenses</span>
+        <span class="badge bg-primary rounded-pill" id="expenseCount">0</span>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center align-middle">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Date</th>
+                        <th>Catégorie</th>
+                        <th>Description</th>
+                        <th>Montant</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="expenseBody">
+                    <tr id="emptyRow">
+                        <td colspan="5" class="text-muted">Aucune dépense trouvée.</td>
+                    </tr>
+                </tbody>
             </table>
-          </div>
         </div>
-        <div class="panel-footer">
-          <span>Total filtré :</span>
-          <strong id="filteredTotal">0.000 DT</strong>
+        <div class="d-flex justify-content-between">
+            <span>Total filtré :</span>
+            <strong id="filteredTotal">0.000 DT</strong>
         </div>
-      </div>
-
     </div>
-  </main>
+</div>
+</div>
 
-  <!-- Modal Add/Edit Expense -->
-  <div class="modal fade" id="expenseModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalTitle"><i class="fa-solid fa-plus me-2"></i>Ajouter une dépense</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<!-- ================= POPUP AJOUT / MODIFICATION ================= -->
+<div class="modal fade" id="expenseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">➕ Ajouter une dépense</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editId"/>
+                <div class="mb-3">
+                    <label class="form-label">Montant (DT) *</label>
+                    <input type="number" id="fAmount" class="form-control" step="0.001" min="0.001" placeholder="Ex: 25.500">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Catégorie *</label>
+                    <select id="fCategory" class="form-select">
+                        <option value="">Choisir une catégorie...</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Date *</label>
+                    <input type="date" id="fDate" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <input type="text" id="fDesc" class="form-control" placeholder="Description optionnelle...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button class="btn btn-primary" onclick="saveExpense()">💾 Enregistrer</button>
+            </div>
         </div>
-        <div class="modal-body">
-          <form id="expenseForm" novalidate>
-            <input type="hidden" id="editId"/>
-            <div class="mb-3">
-              <label class="form-label">Montant (DT) <span class="text-danger">*</span></label>
-              <input type="number" class="form-control" id="fAmount" placeholder="Ex: 25.500" step="0.001" min="0.001" required/>
-              <div class="invalid-feedback">Veuillez entrer un montant valide.</div>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Catégorie <span class="text-danger">*</span></label>
-              <select class="form-select" id="fCategory" required>
-                <option value="">Choisir une catégorie...</option>
-              </select>
-              <div class="invalid-feedback">Veuillez choisir une catégorie.</div>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Date <span class="text-danger">*</span></label>
-              <input type="date" class="form-control" id="fDate" required/>
-              <div class="invalid-feedback">Veuillez sélectionner une date.</div>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Description</label>
-              <input type="text" class="form-control" id="fDesc" placeholder="Description optionnelle..."/>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-          <button class="btn btn-primary" onclick="saveExpense()">
-            <i class="fa-solid fa-floppy-disk me-2"></i>Enregistrer
-          </button>
-        </div>
-      </div>
     </div>
-  </div>
+</div>
 
-  <!-- Modal Delete Confirm -->
-  <div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-      <div class="modal-content">
-        <div class="modal-body text-center py-4">
-          <div class="delete-icon mb-3"><i class="fa-solid fa-trash-can fa-2x"></i></div>
-          <h5>Supprimer cette dépense ?</h5>
-          <p class="text-muted small mb-0">Cette action est irréversible.</p>
+<!-- ================= POPUP CONFIRMATION SUPPRESSION ================= -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <div style="font-size:40px;">🗑️</div>
+                <h5>Supprimer cette dépense ?</h5>
+                <p class="text-muted">Cette action est irréversible.</p>
+                <div class="d-flex justify-content-center gap-2 mt-3">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button class="btn btn-danger" id="confirmDelete">Supprimer</button>
+                </div>
+            </div>
         </div>
-        <div class="modal-footer justify-content-center gap-2">
-          <button class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-          <button class="btn btn-danger" id="confirmDelete">Supprimer</button>
-        </div>
-      </div>
     </div>
-  </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="js/app.js"></script>
-  <script>
-    App.requireAuth();
-    document.getElementById('userGreeting').textContent = 'Bonjour, ' + App.getUser().name;
+</main>
+</div>
+</div>
 
-    const expenseModal = new bootstrap.Modal(document.getElementById('expenseModal'));
-    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/app.js"></script>
+<script>
+App.requireAuth();
+document.getElementById('userGreeting').textContent = App.getUser().name;
 
-    // Populate category selects
-    const cats = App.getCategories();
-    const filterCat = document.getElementById('filterCat');
-    const fCat = document.getElementById('fCategory');
-    cats.forEach(c => {
-      [filterCat, fCat].forEach(sel => {
+const cats = App.getCategories();
+const filterCat = document.getElementById('filterCat');
+const fCat = document.getElementById('fCategory');
+cats.forEach(function (c) {
+    [filterCat, fCat].forEach(function (sel) {
         const opt = document.createElement('option');
-        opt.value = c.name; opt.textContent = c.name;
+        opt.value = c.name;
+        opt.textContent = c.name;
         sel.appendChild(opt);
-      });
     });
+});
 
-    // Set default date
-    document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
+document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
 
-    let currentFilter = { cat: '', from: '', to: '' };
-    let deleteTarget = null;
+let currentFilter = { cat: '', from: '', to: '' };
+let deleteTarget = null;
 
-    function getFiltered() {
-      let expenses = App.getExpenses();
-      if (currentFilter.cat) expenses = expenses.filter(e => e.category === currentFilter.cat);
-      if (currentFilter.from) expenses = expenses.filter(e => e.date >= currentFilter.from);
-      if (currentFilter.to) expenses = expenses.filter(e => e.date <= currentFilter.to);
-      return expenses.sort((a,b) => new Date(b.date) - new Date(a.date));
-    }
+const expenseModal = new bootstrap.Modal(document.getElementById('expenseModal'));
+const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
 
-    function renderTable() {
-      const expenses = getFiltered();
-      const body = document.getElementById('expenseBody');
-      document.getElementById('expenseCount').textContent = expenses.length;
+function getFiltered() {
+    let expenses = App.getExpenses();
+    if (currentFilter.cat) expenses = expenses.filter(function (e) { return e.category === currentFilter.cat; });
+    if (currentFilter.from) expenses = expenses.filter(function (e) { return e.date >= currentFilter.from; });
+    if (currentFilter.to) expenses = expenses.filter(function (e) { return e.date <= currentFilter.to; });
+    return expenses.sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
+}
 
-      if (!expenses.length) {
-        body.innerHTML = `<tr id="emptyRow"><td colspan="5" class="text-center text-muted py-4">
-          <i class="fa-solid fa-inbox fa-2x d-block mb-2 opacity-25"></i>Aucune dépense trouvée.</td></tr>`;
+function renderTable() {
+    const expenses = getFiltered();
+    const body = document.getElementById('expenseBody');
+    document.getElementById('expenseCount').textContent = expenses.length;
+
+    if (!expenses.length) {
+        body.innerHTML = '<tr><td colspan="5" class="text-muted">Aucune dépense trouvée.</td></tr>';
         document.getElementById('filteredTotal').textContent = '0.000 DT';
         return;
-      }
-
-      const total = expenses.reduce((s,e) => s+e.amount, 0);
-      document.getElementById('filteredTotal').textContent = total.toFixed(3) + ' DT';
-
-      body.innerHTML = expenses.map(e => {
-        const cat = cats.find(c => c.name === e.category);
-        const [y,m,d] = e.date.split('-');
-        return `<tr>
-          <td class="text-nowrap">${d}/${m}/${y}</td>
-          <td>
-            <span class="cat-pill" style="background:${cat ? cat.color+'22' : '#f0f0f0'};color:${cat ? cat.color : '#666'}">
-              <i class="${cat ? cat.icon : 'fa-solid fa-circle-question'} me-1"></i>${e.category}
-            </span>
-          </td>
-          <td class="text-muted">${e.description || '—'}</td>
-          <td class="text-end fw-semibold">${e.amount.toFixed(3)} DT</td>
-          <td class="text-center">
-            <button class="btn btn-sm btn-action-edit" onclick="editExpense(${e.id})"><i class="fa-solid fa-pen"></i></button>
-            <button class="btn btn-sm btn-action-del ms-1" onclick="confirmDel(${e.id})"><i class="fa-solid fa-trash"></i></button>
-          </td>
-        </tr>`;
-      }).join('');
     }
 
-    function applyFilters() {
-      currentFilter.cat = document.getElementById('filterCat').value;
-      currentFilter.from = document.getElementById('filterFrom').value;
-      currentFilter.to = document.getElementById('filterTo').value;
-      renderTable();
+    const total = expenses.reduce(function (s, e) { return s + e.amount; }, 0);
+    document.getElementById('filteredTotal').textContent = total.toFixed(3) + ' DT';
+
+    body.innerHTML = expenses.map(function (e) {
+        const cat = cats.find(function (c) { return c.name === e.category; });
+        const parts = e.date.split('-');
+        const y = parts[0], m = parts[1], d = parts[2];
+        return '<tr>' +
+            '<td>' + d + '/' + m + '/' + y + '</td>' +
+            '<td><span class="badge" style="background:' + (cat ? cat.color : '#666') + '">' + (cat ? cat.icon : '❓') + ' ' + e.category + '</span></td>' +
+            '<td class="text-muted">' + (e.description || '—') + '</td>' +
+            '<td class="fw-bold">' + e.amount.toFixed(3) + ' DT</td>' +
+            '<td>' +
+                '<button class="btn btn-sm btn-outline-primary" onclick="editExpense(' + e.id + ')">✏️</button> ' +
+                '<button class="btn btn-sm btn-outline-danger" onclick="confirmDel(' + e.id + ')">🗑️</button>' +
+            '</td>' +
+        '</tr>';
+    }).join('');
+}
+
+function applyFilters() {
+    currentFilter.cat = document.getElementById('filterCat').value;
+    currentFilter.from = document.getElementById('filterFrom').value;
+    currentFilter.to = document.getElementById('filterTo').value;
+    renderTable();
+}
+
+function clearFilters() {
+    document.getElementById('filterCat').value = '';
+    document.getElementById('filterFrom').value = '';
+    document.getElementById('filterTo').value = '';
+    currentFilter = { cat: '', from: '', to: '' };
+    renderTable();
+}
+
+function openModal(expense) {
+    expense = expense || null;
+    document.getElementById('editId').value = expense ? expense.id : '';
+    document.getElementById('fAmount').value = expense ? expense.amount : '';
+    document.getElementById('fCategory').value = expense ? expense.category : '';
+    document.getElementById('fDate').value = expense ? expense.date : new Date().toISOString().split('T')[0];
+    document.getElementById('fDesc').value = expense ? expense.description : '';
+    document.getElementById('modalTitle').textContent = expense ? '✏️ Modifier la dépense' : '➕ Ajouter une dépense';
+}
+
+function editExpense(id) {
+    const e = App.getExpenses().find(function (x) { return x.id === id; });
+    if (e) {
+        openModal(e);
+        expenseModal.show();
+    }
+}
+
+function saveExpense() {
+    const amount = parseFloat(document.getElementById('fAmount').value);
+    const category = document.getElementById('fCategory').value;
+    const date = document.getElementById('fDate').value;
+    const description = document.getElementById('fDesc').value.trim();
+
+    if (!amount || amount <= 0 || !category || !date) {
+        alert('Veuillez remplir correctement tous les champs obligatoires.');
+        return;
     }
 
-    function clearFilters() {
-      document.getElementById('filterCat').value = '';
-      document.getElementById('filterFrom').value = '';
-      document.getElementById('filterTo').value = '';
-      currentFilter = { cat:'', from:'', to:'' };
-      renderTable();
-    }
-
-    function openModal(expense = null) {
-      const form = document.getElementById('expenseForm');
-      form.classList.remove('was-validated');
-      document.getElementById('editId').value = expense ? expense.id : '';
-      document.getElementById('fAmount').value = expense ? expense.amount : '';
-      document.getElementById('fCategory').value = expense ? expense.category : '';
-      document.getElementById('fDate').value = expense ? expense.date : new Date().toISOString().split('T')[0];
-      document.getElementById('fDesc').value = expense ? expense.description : '';
-      document.getElementById('modalTitle').innerHTML = expense
-        ? '<i class="fa-solid fa-pen me-2"></i>Modifier la dépense'
-        : '<i class="fa-solid fa-plus me-2"></i>Ajouter une dépense';
-      expenseModal.show();
-    }
-
-    function editExpense(id) {
-      const e = App.getExpenses().find(x => x.id === id);
-      if (e) openModal(e);
-    }
-
-    function saveExpense() {
-      const form = document.getElementById('expenseForm');
-      form.classList.add('was-validated');
-      if (!form.checkValidity()) return;
-
-      const data = {
-        amount: parseFloat(document.getElementById('fAmount').value),
-        category: document.getElementById('fCategory').value,
-        date: document.getElementById('fDate').value,
-        description: document.getElementById('fDesc').value.trim()
-      };
-
-      const id = document.getElementById('editId').value;
-      if (id) {
+    const data = { amount: amount, category: category, date: date, description: description };
+    const id = document.getElementById('editId').value;
+    if (id) {
         App.updateExpense(parseInt(id), data);
-      } else {
+    } else {
         App.addExpense(data);
-      }
-
-      expenseModal.hide();
-      form.classList.remove('was-validated');
-      renderTable();
     }
 
-    function confirmDel(id) {
-      deleteTarget = id;
-      deleteModal.show();
-    }
+    expenseModal.hide();
+    renderTable();
+}
 
-    document.getElementById('confirmDelete').addEventListener('click', () => {
-      if (deleteTarget !== null) {
+function confirmDel(id) {
+    deleteTarget = id;
+    deleteModal.show();
+}
+
+document.getElementById('confirmDelete').addEventListener('click', function () {
+    if (deleteTarget !== null) {
         App.deleteExpense(deleteTarget);
         deleteTarget = null;
         deleteModal.hide();
         renderTable();
-      }
-    });
-
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('open');
     }
+});
 
-    // Open add modal if redirected with action=add
-    if (new URLSearchParams(window.location.search).get('action') === 'add') {
-      openModal();
-    }
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('d-none');
+}
 
-    renderTable();
-  </script>
+// Ouvrir le popup d'ajout si on arrive avec ?action=add
+if (new URLSearchParams(window.location.search).get('action') === 'add') {
+    openModal();
+    expenseModal.show();
+}
+
+renderTable();
+</script>
 </body>
 </html>

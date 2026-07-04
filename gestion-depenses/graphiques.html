@@ -1,319 +1,211 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MonBudget – Graphiques</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
-  <link href="css/style.css" rel="stylesheet"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonBudget - Graphiques</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="app-layout">
-
-  <!-- Sidebar -->
-  <nav class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-      <span class="brand-icon"><i class="fa-solid fa-wallet"></i></span>
-      <span class="brand-name">MonBudget</span>
-    </div>
-    <ul class="sidebar-nav">
-      <li><a href="dashboard.html"><i class="fa-solid fa-house"></i><span>Tableau de bord</span></a></li>
-      <li><a href="depenses.html"><i class="fa-solid fa-receipt"></i><span>Dépenses</span></a></li>
-      <li><a href="categories.html"><i class="fa-solid fa-tags"></i><span>Catégories</span></a></li>
-      <li><a href="graphiques.html" class="active"><i class="fa-solid fa-chart-pie"></i><span>Graphiques</span></a></li>
+<body>
+<div class="container-fluid">
+<div class="row">
+<!-- ================= MENU ================= -->
+<nav class="col-md-3 col-lg-2 sidebar d-none d-md-block" id="sidebar">
+    <h3 class="text-center mt-3 mb-4">💰 MonBudget</h3>
+    <ul class="nav flex-column">
+        <li class="nav-item"><a href="dashboard.html" class="nav-link">📊 Tableau de bord</a></li>
+        <li class="nav-item"><a href="depenses.html" class="nav-link">🧾 Dépenses</a></li>
+        <li class="nav-item"><a href="categories.html" class="nav-link">🏷️ Catégories</a></li>
+        <li class="nav-item"><a href="graphiques.html" class="nav-link active">📈 Graphiques</a></li>
     </ul>
-    <div class="sidebar-footer">
-      <button class="btn-logout" onclick="App.logout()">
-        <i class="fa-solid fa-right-from-bracket"></i><span>Déconnexion</span>
-      </button>
+    <hr>
+    <button class="btn btn-danger w-100" onclick="App.logout()">🚪 Déconnexion</button>
+</nav>
+<!-- ================= CONTENU ================= -->
+<main class="col-md-9 col-lg-10 main-content">
+<header class="topbar d-flex justify-content-between align-items-center">
+    <button class="btn btn-outline-primary d-md-none" onclick="toggleSidebar()">☰ Menu</button>
+    <h3>📈 Graphiques</h3>
+    <div>Bonjour, <span id="userGreeting"></span> 👋</div>
+</header>
+
+<div class="mt-4">
+<div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+    <div>
+        <h2>Analyse des dépenses</h2>
+        <p class="text-muted">Visualisez et comprenez vos habitudes financières.</p>
     </div>
-  </nav>
+    <select id="chartPeriod" class="form-select" style="width:auto;">
+        <option value="6">6 derniers mois</option>
+        <option value="12" selected>12 derniers mois</option>
+        <option value="all">Tout</option>
+    </select>
+</div>
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <header class="topbar">
-      <button class="btn-toggle-sidebar" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
-      <div class="topbar-title">Graphiques</div>
-      <div class="topbar-user">
-        <span id="userGreeting"></span>
-        <span class="user-avatar"><i class="fa-solid fa-user"></i></span>
-      </div>
-    </header>
-
-    <div class="page-body">
-      <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
-        <div>
-          <h1 class="page-title">Analyse des dépenses</h1>
-          <p class="page-sub">Visualisez et comprenez vos habitudes financières.</p>
+<div class="row">
+    <!-- Répartition par catégorie -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">🏷️ Répartition par catégorie</div>
+            <div class="card-body" id="pieLegend"></div>
         </div>
-        <select class="form-select month-selector" id="chartPeriod" style="width:auto">
-          <option value="6">6 derniers mois</option>
-          <option value="12" selected>12 derniers mois</option>
-          <option value="all">Tout</option>
-        </select>
-      </div>
-
-      <div class="row g-4">
-        <!-- Pie Chart -->
-        <div class="col-12 col-lg-5">
-          <div class="card-panel">
-            <div class="panel-header">
-              <span><i class="fa-solid fa-chart-pie me-2"></i>Répartition par catégorie</span>
-            </div>
-            <div class="panel-body text-center">
-              <canvas id="pieChart" style="max-height:280px;max-width:280px;margin:0 auto;display:block"></canvas>
-              <div id="pieLegend" class="pie-legend mt-3"></div>
-              <div id="pieEmpty" class="text-muted py-4 d-none">
-                <i class="fa-solid fa-chart-pie fa-2x d-block mb-2 opacity-25"></i>Aucune donnée disponible.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bar Chart -->
-        <div class="col-12 col-lg-7">
-          <div class="card-panel">
-            <div class="panel-header">
-              <span><i class="fa-solid fa-chart-bar me-2"></i>Évolution mensuelle</span>
-            </div>
-            <div class="panel-body">
-              <canvas id="barChart" style="max-height:300px"></canvas>
-              <div id="barEmpty" class="text-muted text-center py-4 d-none">
-                <i class="fa-solid fa-chart-bar fa-2x d-block mb-2 opacity-25"></i>Aucune donnée disponible.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Line Chart -->
-        <div class="col-12">
-          <div class="card-panel">
-            <div class="panel-header">
-              <span><i class="fa-solid fa-chart-line me-2"></i>Tendance des dépenses</span>
-            </div>
-            <div class="panel-body">
-              <canvas id="lineChart" style="max-height:250px"></canvas>
-              <div id="lineEmpty" class="text-muted text-center py-4 d-none">
-                <i class="fa-solid fa-chart-line fa-2x d-block mb-2 opacity-25"></i>Aucune donnée disponible.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Stats row -->
-        <div class="col-12">
-          <div class="card-panel">
-            <div class="panel-header"><span><i class="fa-solid fa-table me-2"></i>Récapitulatif par catégorie</span></div>
-            <div class="panel-body p-0">
-              <div class="table-responsive">
-                <table class="table mb-0" id="summaryTable">
-                  <thead>
-                    <tr>
-                      <th>Catégorie</th>
-                      <th class="text-end">Total</th>
-                      <th class="text-end">Dépenses</th>
-                      <th class="text-end">Moyenne</th>
-                      <th>Part</th>
-                    </tr>
-                  </thead>
-                  <tbody id="summaryBody"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
-  </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="js/app.js"></script>
-  <script>
-    App.requireAuth();
-    document.getElementById('userGreeting').textContent = 'Bonjour, ' + App.getUser().name;
+    <!-- Évolution mensuelle -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">📊 Évolution mensuelle</div>
+            <div class="card-body">
+                <div class="bar-chart" id="barChart"></div>
+            </div>
+        </div>
+    </div>
 
-    let pieChartInst = null, barChartInst = null, lineChartInst = null;
-
-    const months = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
-
-    function getFilteredExpenses() {
-      const period = document.getElementById('chartPeriod').value;
-      const all = App.getExpenses();
-      if (period === 'all') return all;
-      const now = new Date();
-      const cutoff = new Date(now.getFullYear(), now.getMonth() - parseInt(period) + 1, 1);
-      return all.filter(e => new Date(e.date) >= cutoff);
-    }
-
-    function renderCharts() {
-      const expenses = getFilteredExpenses();
-      const cats = App.getCategories();
-      const total = expenses.reduce((s,e) => s+e.amount, 0);
-
-      // --- PIE CHART ---
-      const catTotals = {};
-      expenses.forEach(e => catTotals[e.category] = (catTotals[e.category]||0) + e.amount);
-      const sorted = Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
-
-      if (!sorted.length) {
-        document.getElementById('pieChart').style.display = 'none';
-        document.getElementById('pieLegend').innerHTML = '';
-        document.getElementById('pieEmpty').classList.remove('d-none');
-      } else {
-        document.getElementById('pieChart').style.display = 'block';
-        document.getElementById('pieEmpty').classList.add('d-none');
-
-        const pieColors = sorted.map(([name]) => {
-          const cat = cats.find(c => c.name === name);
-          return cat ? cat.color : '#999';
-        });
-
-        if (pieChartInst) pieChartInst.destroy();
-        pieChartInst = new Chart(document.getElementById('pieChart'), {
-          type: 'doughnut',
-          data: {
-            labels: sorted.map(([name]) => name),
-            datasets: [{ data: sorted.map(([,v]) => v), backgroundColor: pieColors, borderWidth: 2, borderColor: '#fff' }]
-          },
-          options: {
-            responsive: true,
-            cutout: '65%',
-            plugins: { legend: { display: false }, tooltip: {
-              callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toFixed(3)} DT` }
-            }}
-          }
-        });
-
-        // Legend
-        document.getElementById('pieLegend').innerHTML = sorted.map(([name, amount], i) => `
-          <div class="pie-legend-item">
-            <span class="pie-legend-dot" style="background:${pieColors[i]}"></span>
-            <span>${name}</span>
-            <span class="ms-auto">${((amount/total)*100).toFixed(1)}%</span>
-            <span class="ms-2 fw-semibold">${amount.toFixed(3)} DT</span>
-          </div>`).join('');
-      }
-
-      // --- BAR CHART (monthly) ---
-      const now = new Date();
-      const period = document.getElementById('chartPeriod').value;
-      const nMonths = period === 'all' ? 12 : parseInt(period);
-      const monthLabels = [];
-      const monthTotals = [];
-      for (let i = nMonths - 1; i >= 0; i--) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-        const label = months[d.getMonth()] + ' ' + d.getFullYear().toString().slice(-2);
-        monthLabels.push(label);
-        monthTotals.push(expenses.filter(e => e.date.startsWith(key)).reduce((s,e) => s+e.amount, 0));
-      }
-
-      if (monthTotals.every(v => v === 0)) {
-        document.getElementById('barChart').style.display = 'none';
-        document.getElementById('barEmpty').classList.remove('d-none');
-      } else {
-        document.getElementById('barChart').style.display = 'block';
-        document.getElementById('barEmpty').classList.add('d-none');
-        if (barChartInst) barChartInst.destroy();
-        barChartInst = new Chart(document.getElementById('barChart'), {
-          type: 'bar',
-          data: {
-            labels: monthLabels,
-            datasets: [{
-              label: 'Dépenses (DT)',
-              data: monthTotals,
-              backgroundColor: '#5C7AEA88',
-              borderColor: '#5C7AEA',
-              borderWidth: 2,
-              borderRadius: 6
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { beginAtZero: true, grid: { color: '#f0f0f0' }, ticks: { callback: v => v.toFixed(0)+' DT' } },
-              x: { grid: { display: false } }
-            }
-          }
-        });
-      }
-
-      // --- LINE CHART ---
-      if (monthTotals.every(v => v === 0)) {
-        document.getElementById('lineChart').style.display = 'none';
-        document.getElementById('lineEmpty').classList.remove('d-none');
-      } else {
-        document.getElementById('lineChart').style.display = 'block';
-        document.getElementById('lineEmpty').classList.add('d-none');
-        if (lineChartInst) lineChartInst.destroy();
-        lineChartInst = new Chart(document.getElementById('lineChart'), {
-          type: 'line',
-          data: {
-            labels: monthLabels,
-            datasets: [{
-              label: 'Tendance (DT)',
-              data: monthTotals,
-              borderColor: '#10B981',
-              backgroundColor: '#10B98120',
-              borderWidth: 2.5,
-              fill: true,
-              tension: 0.4,
-              pointBackgroundColor: '#10B981',
-              pointRadius: 5
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { beginAtZero: true, grid: { color: '#f0f0f0' }, ticks: { callback: v => v.toFixed(0)+' DT' } },
-              x: { grid: { display: false } }
-            }
-          }
-        });
-      }
-
-      // --- Summary Table ---
-      const tbody = document.getElementById('summaryBody');
-      if (!sorted.length) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-muted text-center py-3">Aucune donnée.</td></tr>';
-      } else {
-        tbody.innerHTML = sorted.map(([name, amount]) => {
-          const cat = cats.find(c => c.name === name);
-          const count = expenses.filter(e => e.category === name).length;
-          const avg = count ? amount/count : 0;
-          const pct = total ? (amount/total)*100 : 0;
-          return `<tr>
-            <td>
-              <span class="cat-pill" style="background:${cat?cat.color+'22':'#f0f0f0'};color:${cat?cat.color:'#666'}">
-                <i class="${cat?cat.icon:'fa-solid fa-circle-question'} me-1"></i>${name}
-              </span>
-            </td>
-            <td class="text-end fw-semibold">${amount.toFixed(3)} DT</td>
-            <td class="text-end">${count}</td>
-            <td class="text-end">${avg.toFixed(3)} DT</td>
-            <td style="width:160px">
-              <div class="d-flex align-items-center gap-2">
-                <div class="progress flex-grow-1" style="height:6px">
-                  <div class="progress-bar" style="width:${pct}%;background:${cat?cat.color:'#999'}"></div>
+    <!-- Tableau récapitulatif -->
+    <div class="col-12 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header">📋 Récapitulatif par catégorie</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center align-middle">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Catégorie</th>
+                                <th>Total</th>
+                                <th>Dépenses</th>
+                                <th>Moyenne</th>
+                                <th>Part</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summaryBody"></tbody>
+                    </table>
                 </div>
-                <span class="small">${pct.toFixed(1)}%</span>
-              </div>
-            </td>
-          </tr>`;
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+</main>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/app.js"></script>
+<script>
+App.requireAuth();
+document.getElementById('userGreeting').textContent = App.getUser().name;
+
+const months = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+
+function getFilteredExpenses() {
+    const period = document.getElementById('chartPeriod').value;
+    const all = App.getExpenses();
+    if (period === 'all') return all;
+    const now = new Date();
+    const cutoff = new Date(now.getFullYear(), now.getMonth() - parseInt(period) + 1, 1);
+    return all.filter(function (e) { return new Date(e.date) >= cutoff; });
+}
+
+function renderCharts() {
+    const expenses = getFilteredExpenses();
+    const cats = App.getCategories();
+    const total = expenses.reduce(function (s, e) { return s + e.amount; }, 0);
+
+    // --- Répartition par catégorie ---
+    const catTotals = {};
+    expenses.forEach(function (e) { catTotals[e.category] = (catTotals[e.category] || 0) + e.amount; });
+    const sorted = Object.entries(catTotals).sort(function (a, b) { return b[1] - a[1]; });
+
+    const legend = document.getElementById('pieLegend');
+    if (!sorted.length) {
+        legend.innerHTML = '<p class="text-center text-muted">Aucune donnée disponible.</p>';
+    } else {
+        legend.innerHTML = sorted.map(function (entry) {
+            const name = entry[0], amount = entry[1];
+            const cat = cats.find(function (c) { return c.name === name; });
+            const color = cat ? cat.color : '#999';
+            const pct = total ? (amount / total) * 100 : 0;
+            return '<div class="mb-3">' +
+                '<div class="d-flex align-items-center mb-1">' +
+                    '<span class="legend-dot me-2" style="background:' + color + '"></span>' +
+                    '<span>' + name + '</span>' +
+                '</div>' +
+                '<div class="progress mb-1">' +
+                    '<div class="progress-bar" style="width:' + pct + '%;background:' + color + '"></div>' +
+                '</div>' +
+                '<small class="text-muted">' + pct.toFixed(1) + '% · ' + amount.toFixed(3) + ' DT</small>' +
+            '</div>';
         }).join('');
-      }
     }
 
-    document.getElementById('chartPeriod').addEventListener('change', renderCharts);
-
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('open');
+    // --- Évolution mensuelle ---
+    const now = new Date();
+    const period = document.getElementById('chartPeriod').value;
+    const nMonths = period === 'all' ? 12 : parseInt(period);
+    const monthLabels = [];
+    const monthTotals = [];
+    for (let i = nMonths - 1; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+        monthLabels.push(months[d.getMonth()] + ' ' + d.getFullYear().toString().slice(-2));
+        monthTotals.push(expenses.filter(function (e) { return e.date.startsWith(key); }).reduce(function (s, e) { return s + e.amount; }, 0));
     }
 
-    renderCharts();
-  </script>
+    const barChart = document.getElementById('barChart');
+    const maxVal = Math.max.apply(null, monthTotals.concat([1]));
+
+    if (monthTotals.every(function (v) { return v === 0; })) {
+        barChart.innerHTML = '<p class="text-center text-muted">Aucune donnée disponible.</p>';
+    } else {
+        barChart.innerHTML = monthLabels.map(function (label, i) {
+            const heightPct = (monthTotals[i] / maxVal) * 100;
+            return '<div class="bar-col">' +
+                '<div class="bar-value">' + (monthTotals[i] > 0 ? monthTotals[i].toFixed(0) : '') + '</div>' +
+                '<div class="bar-track"><div class="bar-fill" style="height:' + heightPct + '%"></div></div>' +
+                '<div class="bar-label">' + label + '</div>' +
+            '</div>';
+        }).join('');
+    }
+
+    // --- Tableau récapitulatif ---
+    const tbody = document.getElementById('summaryBody');
+    if (!sorted.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-muted">Aucune donnée.</td></tr>';
+    } else {
+        tbody.innerHTML = sorted.map(function (entry) {
+            const name = entry[0], amount = entry[1];
+            const cat = cats.find(function (c) { return c.name === name; });
+            const color = cat ? cat.color : '#999';
+            const count = expenses.filter(function (e) { return e.category === name; }).length;
+            const avg = count ? amount / count : 0;
+            const pct = total ? (amount / total) * 100 : 0;
+            return '<tr>' +
+                '<td><span class="badge" style="background:' + color + '">' + (cat ? cat.icon : '❓') + ' ' + name + '</span></td>' +
+                '<td class="fw-bold">' + amount.toFixed(3) + ' DT</td>' +
+                '<td>' + count + '</td>' +
+                '<td>' + avg.toFixed(3) + ' DT</td>' +
+                '<td>' +
+                    '<div class="d-flex align-items-center gap-2">' +
+                        '<div class="progress flex-grow-1"><div class="progress-bar" style="width:' + pct + '%;background:' + color + '"></div></div>' +
+                        '<span>' + pct.toFixed(1) + '%</span>' +
+                    '</div>' +
+                '</td>' +
+            '</tr>';
+        }).join('');
+    }
+}
+
+document.getElementById('chartPeriod').addEventListener('change', renderCharts);
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('d-none');
+}
+
+renderCharts();
+</script>
 </body>
 </html>
