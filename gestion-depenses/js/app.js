@@ -1,7 +1,3 @@
-/**
- * MonBudget – Application Logic
- * Gestion des dépenses personnelles
- */
 
 const App = (() => {
 
@@ -160,11 +156,73 @@ const App = (() => {
     store.set('mb_categories', getCategories().filter(c => c.id !== id));
   }
 
+  /* ── PAGE INIT (commun à toutes les pages protégées) ──────── */
+  function initPage() {
+    requireAuth();
+    const greeting = document.getElementById('userGreeting');
+    if (greeting) greeting.textContent = getUser().name;
+  }
+
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) sidebar.classList.toggle('d-none');
+  }
+
+  /* ── FORMATAGE ───────────────────────────────────────────── */
+  function formatDT(amount) {
+    return (amount || 0).toFixed(3) + ' DT';
+  }
+
+  /* ── HELPERS CATÉGORIES ──────────────────────────────────── */
+  // Retourne la catégorie correspondant à un nom, ou un style par défaut si introuvable
+  function getCategoryStyle(name) {
+    const cat = getCategories().find(c => c.name === name);
+    return cat || { name, color: '#999', icon: '❓' };
+  }
+
+  // Remplit un <select> avec la liste des catégories
+  // options: { includeEmpty: bool, emptyLabel: string }
+  function populateCategorySelect(selectEl, options) {
+    options = options || {};
+    if (!selectEl) return;
+    if (options.includeEmpty) {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = options.emptyLabel || 'Choisir une catégorie...';
+      selectEl.appendChild(opt);
+    }
+    getCategories().forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.name;
+      opt.textContent = c.name;
+      selectEl.appendChild(opt);
+    });
+  }
+
+  /* ── FORMULAIRES : AFFICHER/MASQUER MOT DE PASSE ──────────── */
+  // Branche un bouton "Afficher/Masquer" sur un champ password (login.html, signup.html)
+  function setupPasswordToggle(toggleBtnId, inputId) {
+    const btn = document.getElementById(toggleBtnId);
+    const input = document.getElementById(inputId);
+    if (!btn || !input) return;
+    btn.addEventListener('click', function () {
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = 'Masquer';
+      } else {
+        input.type = 'password';
+        btn.textContent = 'Afficher';
+      }
+    });
+  }
+
   /* ── PUBLIC API ──────────────────────────────────────────── */
   return {
     login, logout, isLoggedIn, getUser, requireAuth, register, emailExists,
     getExpenses, addExpense, updateExpense, deleteExpense,
-    getCategories, addCategory, updateCategory, deleteCategory
+    getCategories, addCategory, updateCategory, deleteCategory,
+    initPage, toggleSidebar, formatDT, getCategoryStyle,
+    populateCategorySelect, setupPasswordToggle
   };
 
 })();
