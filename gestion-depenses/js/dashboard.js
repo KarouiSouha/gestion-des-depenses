@@ -1,28 +1,33 @@
-
-App.initPage();
-
 const monthSel = document.getElementById('monthFilter');
 const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 const now = new Date();
 
-// Création de la liste des mois
-for (let i = 11; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
-    const option = document.createElement('option');
-    option.value = value;
-    option.textContent = months[d.getMonth()] + ' ' + d.getFullYear();
-    if (i === 0) {
-        option.selected = true;
-    }
-    monthSel.appendChild(option);
-}
-document.getElementById('currentMonthLabel').textContent = months[now.getMonth()] + ' ' + now.getFullYear();
-monthSel.addEventListener('change', renderDashboard);
+async function setupPage() {
+    // Vérifie la session et charge catégories + dépenses depuis le backend.
+    const ok = await App.initPage();
+    if (!ok) return; // redirection vers signin.html déjà lancée
 
-// Remplir le menu déroulant des catégories du popup rapide
-App.populateCategorySelect(document.getElementById('qaCategory'));
-document.getElementById('qaDate').value = new Date().toISOString().split('T')[0];
+    // Création de la liste des mois
+    for (let i = 11; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = months[d.getMonth()] + ' ' + d.getFullYear();
+        if (i === 0) {
+            option.selected = true;
+        }
+        monthSel.appendChild(option);
+    }
+    document.getElementById('currentMonthLabel').textContent = months[now.getMonth()] + ' ' + now.getFullYear();
+    monthSel.addEventListener('change', renderDashboard);
+
+    // Remplir le menu déroulant des catégories du popup rapide
+    App.populateCategorySelect(document.getElementById('qaCategory'));
+    document.getElementById('qaDate').value = new Date().toISOString().split('T')[0];
+
+    renderDashboard();
+}
 
 function renderDashboard() {
     let expenses = App.getExpenses();
@@ -117,7 +122,7 @@ function afficherRecentes(expenses) {
     zone.innerHTML = html;
 }
 
-function quickSave() {
+async function quickSave() {
     const amount = parseFloat(document.getElementById('qaAmount').value);
     const category = document.getElementById('qaCategory').value;
     const date = document.getElementById('qaDate').value;
@@ -126,7 +131,7 @@ function quickSave() {
         alert('Veuillez remplir tous les champs.');
         return;
     }
-    App.addExpense({
+    await App.addExpense({
         amount: amount,
         category: category,
         date: date,
@@ -137,4 +142,4 @@ function quickSave() {
     renderDashboard();
 }
 
-renderDashboard();
+setupPage();

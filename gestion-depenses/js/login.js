@@ -1,11 +1,11 @@
-
 App.setupPasswordToggle('togglePassword', 'password');
 
-document.getElementById('loginForm').addEventListener('submit', function (e) {
+document.getElementById('loginForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
-    if (App.login(email, password)) {
+    const result = await App.login(email, password);
+    if (result.ok) {
         window.location.href = 'dashboard.html';
     } else {
         const alertBox = document.getElementById('loginAlert');
@@ -16,6 +16,5 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
     }
 });
 
-if (App.isLoggedIn()) {
-    window.location.href = 'dashboard.html';
-}
+// Si une session est déjà active, on saute directement au dashboard.
+App.redirectIfLoggedIn();

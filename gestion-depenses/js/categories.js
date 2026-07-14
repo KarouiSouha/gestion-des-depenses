@@ -1,47 +1,61 @@
-
-App.initPage();
-
 let deleteTarget = null;
-
-const catModal = new bootstrap.Modal(document.getElementById('catModal'));
-const deleteCatModal = new bootstrap.Modal(document.getElementById('deleteCatModal'));
+let catModal, deleteCatModal;
 
 const COLOR_PRESETS = ['#5C7AEA','#F97316','#10B981','#EF4444','#8B5CF6','#F59E0B','#06B6D4','#EC4899','#84CC16','#6B7280'];
 const ICON_OPTIONS = ['🍽️','🚗','🏠','❤️','🎬','📶','📚','➖','👕','✈️','🎮','🏋️','🎵','🎁','🐾','⭐'];
 
-// Construire les pastilles de couleur
-const presets = document.getElementById('colorPresets');
-COLOR_PRESETS.forEach(function (color) {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'btn btn-sm';
-    btn.style.background = color;
-    btn.style.width = '25px';
-    btn.style.height = '25px';
-    btn.title = color;
-    btn.onclick = function () { document.getElementById('catColor').value = color; };
-    presets.appendChild(btn);
-});
+async function setupPage() {
+    const ok = await App.initPage();
+    if (!ok) return; // redirection vers signin.html déjà lancée
 
-// Construire la grille d'icônes
-const iconGrid = document.getElementById('iconGrid');
-ICON_OPTIONS.forEach(function (icon) {
-    const col = document.createElement('div');
-    col.className = 'col';
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'btn btn-outline-secondary w-100 icon-btn';
-    btn.dataset.icon = icon;
-    btn.textContent = icon;
-    btn.onclick = function () {
-        document.querySelectorAll('.icon-btn').forEach(function (b) { b.classList.remove('active', 'btn-primary'); b.classList.add('btn-outline-secondary'); });
-        btn.classList.add('active', 'btn-primary');
-        btn.classList.remove('btn-outline-secondary');
-        document.getElementById('catIcon').value = icon;
-    };
-    col.appendChild(btn);
-    iconGrid.appendChild(col);
-});
+    catModal = new bootstrap.Modal(document.getElementById('catModal'));
+    deleteCatModal = new bootstrap.Modal(document.getElementById('deleteCatModal'));
+
+    // Construire les pastilles de couleur
+    const presets = document.getElementById('colorPresets');
+    COLOR_PRESETS.forEach(function (color) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn-sm';
+        btn.style.background = color;
+        btn.style.width = '25px';
+        btn.style.height = '25px';
+        btn.title = color;
+        btn.onclick = function () { document.getElementById('catColor').value = color; };
+        presets.appendChild(btn);
+    });
+
+    // Construire la grille d'icônes
+    const iconGrid = document.getElementById('iconGrid');
+    ICON_OPTIONS.forEach(function (icon) {
+        const col = document.createElement('div');
+        col.className = 'col';
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn-outline-secondary w-100 icon-btn';
+        btn.dataset.icon = icon;
+        btn.textContent = icon;
+        btn.onclick = function () {
+            document.querySelectorAll('.icon-btn').forEach(function (b) { b.classList.remove('active', 'btn-primary'); b.classList.add('btn-outline-secondary'); });
+            btn.classList.add('active', 'btn-primary');
+            btn.classList.remove('btn-outline-secondary');
+            document.getElementById('catIcon').value = icon;
+        };
+        col.appendChild(btn);
+        iconGrid.appendChild(col);
+    });
+
+    document.getElementById('confirmCatDelete').addEventListener('click', async function () {
+        if (deleteTarget !== null) {
+            await App.deleteCategory(deleteTarget);
+            deleteTarget = null;
+            deleteCatModal.hide();
+            renderGrid();
+        }
+    });
+
+    renderGrid();
+}
 
 function renderGrid() {
     const cats = App.getCategories();
@@ -67,7 +81,7 @@ function renderGrid() {
                     '</div>' +
                     '<div class="d-flex justify-content-between">' +
                         '<button class="btn btn-sm btn-outline-primary" onclick="editCat(' + c.id + ')">✏️ Modifier</button>' +
-                        (!c.isDefault ? '<button class="btn btn-sm btn-outline-danger" onclick="confirmDelCat(' + c.id + ')">🗑️ Supprimer</button>' : '<span class="badge bg-success">Défaut</span>') +
+                        (!c.is_default ? '<button class="btn btn-sm btn-outline-danger" onclick="confirmDelCat(' + c.id + ')">🗑️ Supprimer</button>' : '<span class="badge bg-success">Défaut</span>') +
                     '</div>' +
                 '</div>' +
             '</div>' +
@@ -100,7 +114,7 @@ function editCat(id) {
     }
 }
 
-function saveCat() {
+async function saveCat() {
     const name = document.getElementById('catName').value.trim();
     if (!name) { alert('Veuillez entrer un nom.'); return; }
 
@@ -113,9 +127,9 @@ function saveCat() {
 
     const id = document.getElementById('catEditId').value;
     if (id) {
-        App.updateCategory(parseInt(id), data);
+        await App.updateCategory(parseInt(id), data);
     } else {
-        App.addCategory(data);
+        await App.addCategory(data);
     }
 
     catModal.hide();
@@ -132,13 +146,4 @@ function confirmDelCat(id) {
     deleteCatModal.show();
 }
 
-document.getElementById('confirmCatDelete').addEventListener('click', function () {
-    if (deleteTarget !== null) {
-        App.deleteCategory(deleteTarget);
-        deleteTarget = null;
-        deleteCatModal.hide();
-        renderGrid();
-    }
-});
-
-renderGrid();
+setupPage();

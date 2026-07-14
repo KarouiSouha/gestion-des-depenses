@@ -1,166 +1,133 @@
-
 const App = (() => {
 
-  /* ── DEMO USER ──────────────────────────────────────────── */
-  const DEMO_USER = {
-    email: 'admin@demo.com',
-    password: '123456',
-    name: 'Admin'
-  };
+  /* ── CONFIG ──────────────────────────────────────────────── */
+  // Chemin vers le backend PHP, relatif aux pages HTML du frontend.
+  // Si tu suis le README (backend/ à côté de gestion-depenses/), ne change rien.
+  const API_BASE = '../backend/';
 
-  /* ── DEFAULT CATEGORIES ──────────────────────────────────── */
-  const DEFAULT_CATEGORIES = [
-    { id: 1, name: 'Alimentation', description: 'Courses, supermarché, restaurants', color: '#F97316', icon: '🍽️', isDefault: true },
-    { id: 2, name: 'Transport',    description: 'Taxi, bus, carburant, péages',        color: '#5C7AEA', icon: '🚗', isDefault: true },
-    { id: 3, name: 'Logement',     description: 'Loyer, eau, électricité, internet',   color: '#10B981', icon: '🏠', isDefault: true },
-    { id: 4, name: 'Santé',        description: 'Médecin, pharmacie, analyses',        color: '#EF4444', icon: '❤️', isDefault: true },
-    { id: 5, name: 'Loisirs',      description: 'Cinéma, café, sorties culturelles',   color: '#8B5CF6', icon: '🎬', isDefault: true },
-    { id: 6, name: 'Internet',     description: 'Wi-Fi, abonnement mobile',            color: '#06B6D4', icon: '📶', isDefault: true },
-    { id: 7, name: 'Éducation',    description: 'Livres, formations, cours',           color: '#F59E0B', icon: '📚', isDefault: true },
-    { id: 8, name: 'Autres',       description: 'Dépenses diverses non catégorisées',  color: '#6B7280', icon: '➖', isDefault: true }
-  ];
-
-  /* ── DEMO DATA ───────────────────────────────────────────── */
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, '0');
-  const pm = String(now.getMonth()).padStart(2, '0') || '12';
-  const py = now.getMonth() === 0 ? y - 1 : y;
-
-  const DEMO_EXPENSES = [
-    { id: 1,  amount: 85.000, category: 'Alimentation', date: `${y}-${m}-02`, description: 'Carrefour Market' },
-    { id: 2,  amount: 12.500, category: 'Transport',    date: `${y}-${m}-03`, description: 'Taxi Uber' },
-    { id: 3,  amount: 650.000,category: 'Logement',     date: `${y}-${m}-01`, description: 'Loyer mensuel' },
-    { id: 4,  amount: 45.000, category: 'Santé',        date: `${y}-${m}-05`, description: 'Consultation Dr. Ahmed' },
-    { id: 5,  amount: 30.000, category: 'Loisirs',      date: `${y}-${m}-06`, description: 'Cinéma + restaurant' },
-    { id: 6,  amount: 39.900, category: 'Internet',     date: `${y}-${m}-01`, description: 'Abonnement TOPNET' },
-    { id: 7,  amount: 75.000, category: 'Éducation',    date: `${y}-${m}-08`, description: 'Cours de langues' },
-    { id: 8,  amount: 22.000, category: 'Alimentation', date: `${y}-${m}-10`, description: 'Restaurant déjeuner' },
-    { id: 9,  amount: 8.500,  category: 'Transport',    date: `${y}-${m}-12`, description: 'Bus métro' },
-    { id: 10, amount: 55.000, category: 'Alimentation', date: `${py}-${pm}-15`, description: 'Monoprix' },
-    { id: 11, amount: 120.000,category: 'Santé',        date: `${py}-${pm}-20`, description: 'Analyses médicales' },
-    { id: 12, amount: 18.000, category: 'Loisirs',      date: `${py}-${pm}-22`, description: 'Café et sorties' },
-    { id: 13, amount: 650.000,category: 'Logement',     date: `${py}-${pm}-01`, description: 'Loyer mensuel' },
-    { id: 14, amount: 95.000, category: 'Alimentation', date: `${py}-${pm}-05`, description: 'Marché Bab Bhar' },
-  ];
-
-  /* ── STORAGE HELPERS ─────────────────────────────────────── */
-  const store = {
-    get: (key) => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } },
-    set: (key, val) => localStorage.setItem(key, JSON.stringify(val)),
-  };
-
-  function init() {
-    if (!store.get('mb_users'))      store.set('mb_users', [DEMO_USER]);
-    if (!store.get('mb_categories')) store.set('mb_categories', DEFAULT_CATEGORIES);
-    if (!store.get('mb_expenses'))   store.set('mb_expenses',   DEMO_EXPENSES);
-    if (!store.get('mb_nextId'))     store.set('mb_nextId', 100);
+  /* ── APPEL API (fetch) ───────────────────────────────────── */
+  // credentials: 'include' est indispensable : c'est ce qui permet au
+  // navigateur d'envoyer le cookie de session PHP à chaque requête.
+  async function apiGet(path) {
+    const res = await fetch(API_BASE + path, { credentials: 'include' });
+    return res.json();
   }
 
-  function nextId() {
-    const id = (store.get('mb_nextId') || 100) + 1;
-    store.set('mb_nextId', id);
-    return id;
+  async function apiPost(path, data) {
+    const res = await fetch(API_BASE + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(data || {})
+    });
+    return res.json();
   }
 
-  /* ── USERS ───────────────────────────────────────────────── */
-  function getUsers() {
-    return store.get('mb_users') || [DEMO_USER];
-  }
-
-  function emailExists(email) {
-    return getUsers().some(u => u.email.toLowerCase() === email.toLowerCase());
-  }
+  /* ── CACHE LOCAL (évite de re-fetcher à chaque affichage) ─── */
+  let _user = null;
+  let _categories = [];
+  let _expenses = [];
 
   /* ── AUTH ────────────────────────────────────────────────── */
-  function login(email, password) {
-    init();
-    const user = getUsers().find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
-    if (user) {
-      store.set('mb_session', { email: user.email, name: user.name, loginAt: Date.now() });
-      return true;
-    }
-    return false;
+  async function login(email, password) {
+    const result = await apiPost('auth/login.php', { email, password });
+    if (result.ok) _user = result.user;
+    return result; // { ok, user } ou { ok:false, error }
   }
 
-  function register(name, email, password) {
-    init();
-    if (!name || !email || !password) {
-      return { ok: false, error: 'Veuillez remplir tous les champs.' };
-    }
-    if (emailExists(email)) {
-      return { ok: false, error: 'Un compte existe déjà avec cet e-mail.' };
-    }
-    const users = getUsers();
-    users.push({ name, email, password });
-    store.set('mb_users', users);
-    store.set('mb_session', { email, name, loginAt: Date.now() });
-    return { ok: true };
+  async function register(name, email, password) {
+    const result = await apiPost('auth/register.php', { name, email, password });
+    if (result.ok) _user = result.user;
+    return result;
   }
 
-  function logout() {
-    localStorage.removeItem('mb_session');
-    window.location.href = 'index.html';
+  async function logout() {
+    await apiPost('auth/logout.php');
+    window.location.href = 'signin.html';
   }
 
-  function isLoggedIn() {
-    return !!store.get('mb_session');
+  // Interroge le serveur pour savoir si une session est active.
+  async function checkAuth() {
+    const result = await apiGet('auth/me.php');
+    if (result.ok) _user = result.user;
+    return result.ok;
   }
 
   function getUser() {
-    return store.get('mb_session') || {};
+    return _user || {};
   }
 
-  function requireAuth() {
-    if (!isLoggedIn()) window.location.href = 'index.html';
-    init();
+  // À appeler en haut des pages publiques (signin.html, signup.html) :
+  // redirige vers le dashboard si l'utilisateur est déjà connecté.
+  async function redirectIfLoggedIn() {
+    if (await checkAuth()) window.location.href = 'dashboard.html';
+  }
+
+  // À appeler en haut de chaque page protégée (dashboard, depenses, etc.) :
+  // redirige vers signin.html si pas connecté, sinon charge les données.
+  async function initPage() {
+    const loggedIn = await checkAuth();
+    if (!loggedIn) {
+      window.location.href = 'signin.html';
+      return false;
+    }
+    const greeting = document.getElementById('userGreeting');
+    if (greeting) greeting.textContent = getUser().name;
+    await Promise.all([loadCategories(), loadExpenses()]);
+    return true;
   }
 
   /* ── EXPENSES ────────────────────────────────────────────── */
+  // getExpenses() reste synchrone : elle lit le cache déjà chargé par initPage().
   function getExpenses() {
-    return store.get('mb_expenses') || [];
+    return _expenses;
   }
 
-  function addExpense(data) {
-    const expenses = getExpenses();
-    expenses.push({ id: nextId(), ...data });
-    store.set('mb_expenses', expenses);
+  async function loadExpenses() {
+    const result = await apiGet('expenses/get.php');
+    _expenses = result.ok ? result.expenses : [];
+    return _expenses;
   }
 
-  function updateExpense(id, data) {
-    const expenses = getExpenses().map(e => e.id === id ? { ...e, ...data } : e);
-    store.set('mb_expenses', expenses);
+  async function addExpense(data) {
+    await apiPost('expenses/add.php', data);
+    await loadExpenses();
   }
 
-  function deleteExpense(id) {
-    store.set('mb_expenses', getExpenses().filter(e => e.id !== id));
+  async function updateExpense(id, data) {
+    await apiPost('expenses/update.php', { id, ...data });
+    await loadExpenses();
+  }
+
+  async function deleteExpense(id) {
+    await apiPost('expenses/delete.php', { id });
+    await loadExpenses();
   }
 
   /* ── CATEGORIES ──────────────────────────────────────────── */
   function getCategories() {
-    return store.get('mb_categories') || DEFAULT_CATEGORIES;
+    return _categories;
   }
 
-  function addCategory(data) {
-    const cats = getCategories();
-    cats.push({ id: nextId(), isDefault: false, ...data });
-    store.set('mb_categories', cats);
+  async function loadCategories() {
+    const result = await apiGet('categories/get.php');
+    _categories = result.ok ? result.categories : [];
+    return _categories;
   }
 
-  function updateCategory(id, data) {
-    const cats = getCategories().map(c => c.id === id ? { ...c, ...data } : c);
-    store.set('mb_categories', cats);
+  async function addCategory(data) {
+    await apiPost('categories/add.php', data);
+    await loadCategories();
   }
 
-  function deleteCategory(id) {
-    store.set('mb_categories', getCategories().filter(c => c.id !== id));
+  async function updateCategory(id, data) {
+    await apiPost('categories/update.php', { id, ...data });
+    await loadCategories();
   }
 
-  /* ── PAGE INIT (commun à toutes les pages protégées) ──────── */
-  function initPage() {
-    requireAuth();
-    const greeting = document.getElementById('userGreeting');
-    if (greeting) greeting.textContent = getUser().name;
+  async function deleteCategory(id) {
+    await apiPost('categories/delete.php', { id });
+    await loadCategories();
   }
 
   function toggleSidebar() {
@@ -218,9 +185,9 @@ const App = (() => {
 
   /* ── PUBLIC API ──────────────────────────────────────────── */
   return {
-    login, logout, isLoggedIn, getUser, requireAuth, register, emailExists,
-    getExpenses, addExpense, updateExpense, deleteExpense,
-    getCategories, addCategory, updateCategory, deleteCategory,
+    login, logout, getUser, register, checkAuth, redirectIfLoggedIn,
+    getExpenses, addExpense, updateExpense, deleteExpense, loadExpenses,
+    getCategories, addCategory, updateCategory, deleteCategory, loadCategories,
     initPage, toggleSidebar, formatDT, getCategoryStyle,
     populateCategorySelect, setupPasswordToggle
   };

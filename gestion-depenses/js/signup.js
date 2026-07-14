@@ -1,4 +1,3 @@
-
 App.setupPasswordToggle('togglePassword', 'password');
 
 function showError(message) {
@@ -10,7 +9,7 @@ function showError(message) {
     }, 3000);
 }
 
-document.getElementById('signupForm').addEventListener('submit', function (e) {
+document.getElementById('signupForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     const name = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim();
@@ -26,7 +25,7 @@ document.getElementById('signupForm').addEventListener('submit', function (e) {
         return;
     }
 
-    const result = App.register(name, email, password);
+    const result = await App.register(name, email, password);
     if (result.ok) {
         window.location.href = 'dashboard.html';
     } else {
@@ -34,6 +33,5 @@ document.getElementById('signupForm').addEventListener('submit', function (e) {
     }
 });
 
-if (App.isLoggedIn()) {
-    window.location.href = 'dashboard.html';
-}
+// Si une session est déjà active, on saute directement au dashboard.
+App.redirectIfLoggedIn();

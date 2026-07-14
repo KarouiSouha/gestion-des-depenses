@@ -1,18 +1,38 @@
-
-App.initPage();
-
-const filterCat = document.getElementById('filterCat');
-const fCat = document.getElementById('fCategory');
-App.populateCategorySelect(filterCat, { includeEmpty: true, emptyLabel: 'Toutes les catégories' });
-App.populateCategorySelect(fCat, { includeEmpty: true, emptyLabel: 'Choisir une catégorie...' });
-
-document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
-
 let currentFilter = { cat: '', from: '', to: '' };
 let deleteTarget = null;
+let expenseModal, deleteModal;
 
-const expenseModal = new bootstrap.Modal(document.getElementById('expenseModal'));
-const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+async function setupPage() {
+    const ok = await App.initPage();
+    if (!ok) return; // redirection vers signin.html déjà lancée
+
+    const filterCat = document.getElementById('filterCat');
+    const fCat = document.getElementById('fCategory');
+    App.populateCategorySelect(filterCat, { includeEmpty: true, emptyLabel: 'Toutes les catégories' });
+    App.populateCategorySelect(fCat, { includeEmpty: true, emptyLabel: 'Choisir une catégorie...' });
+
+    document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
+
+    expenseModal = new bootstrap.Modal(document.getElementById('expenseModal'));
+    deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+
+    document.getElementById('confirmDelete').addEventListener('click', async function () {
+        if (deleteTarget !== null) {
+            await App.deleteExpense(deleteTarget);
+            deleteTarget = null;
+            deleteModal.hide();
+            renderTable();
+        }
+    });
+
+    // Ouvrir le popup d'ajout si on arrive avec ?action=add
+    if (new URLSearchParams(window.location.search).get('action') === 'add') {
+        openModal();
+        expenseModal.show();
+    }
+
+    renderTable();
+}
 
 function getFiltered() {
     let expenses = App.getExpenses();
@@ -86,7 +106,7 @@ function editExpense(id) {
     }
 }
 
-function saveExpense() {
+async function saveExpense() {
     const amount = parseFloat(document.getElementById('fAmount').value);
     const category = document.getElementById('fCategory').value;
     const date = document.getElementById('fDate').value;
@@ -100,9 +120,9 @@ function saveExpense() {
     const data = { amount: amount, category: category, date: date, description: description };
     const id = document.getElementById('editId').value;
     if (id) {
-        App.updateExpense(parseInt(id), data);
+        await App.updateExpense(parseInt(id), data);
     } else {
-        App.addExpense(data);
+        await App.addExpense(data);
     }
 
     expenseModal.hide();
@@ -114,19 +134,4 @@ function confirmDel(id) {
     deleteModal.show();
 }
 
-document.getElementById('confirmDelete').addEventListener('click', function () {
-    if (deleteTarget !== null) {
-        App.deleteExpense(deleteTarget);
-        deleteTarget = null;
-        deleteModal.hide();
-        renderTable();
-    }
-});
-
-// Ouvrir le popup d'ajout si on arrive avec ?action=add
-if (new URLSearchParams(window.location.search).get('action') === 'add') {
-    openModal();
-    expenseModal.show();
-}
-
-renderTable();
+setupPage();

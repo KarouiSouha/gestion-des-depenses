@@ -1,6 +1,3 @@
-
-App.initPage();
-
 const monthsShort = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
 
 function getFilteredExpenses() {
@@ -98,6 +95,12 @@ function renderCharts() {
     }
 }
 
-document.getElementById('chartPeriod').addEventListener('change', renderCharts);
+async function setupPage() {
+    const ok = await App.initPage();
+    if (!ok) return; // redirection vers signin.html déjà lancée
 
-renderCharts();
+    document.getElementById('chartPeriod').addEventListener('change', renderCharts);
+    renderCharts();
+}
+
+setupPage();
