@@ -14,35 +14,35 @@
 <div class="row">
 <!-- ================= MENU ================= -->
 <nav class="col-md-3 col-lg-2 sidebar d-none d-md-block" id="sidebar">
-    <h3 class="text-center mt-3 mb-4">💰 MonBudget</h3>
+    <h3 class="text-center mt-3 mb-4">MonBudget</h3>
     <ul class="nav flex-column">
-        <li class="nav-item"><a href="dashboard.html" class="nav-link active">📊 Tableau de bord</a></li>
-        <li class="nav-item"><a href="depenses.html" class="nav-link">🧾 Dépenses</a></li>
-        <li class="nav-item"><a href="categories.html" class="nav-link">🏷️ Catégories</a></li>
-        <li class="nav-item"><a href="graphiques.html" class="nav-link">📈 Graphiques</a></li>
+        <li class="nav-item"><a href="dashboard.html" class="nav-link active">Tableau de bord</a></li>
+        <li class="nav-item"><a href="depenses.html" class="nav-link">Dépenses</a></li>
+        <li class="nav-item"><a href="categories.html" class="nav-link">Catégories</a></li>
+        <li class="nav-item"><a href="graphiques.html" class="nav-link">Graphiques</a></li>
     </ul>
     <hr>
-    <button class="btn btn-danger w-100" onclick="App.logout()">🚪 Déconnexion</button>
+    <button class="btn btn-danger w-100" onclick="App.logout()">Déconnexion</button>
 </nav>
 <!-- ================= CONTENU ================= -->
 <main class="col-md-9 col-lg-10 main-content">
 <header class="topbar d-flex justify-content-between align-items-center">
     <button class="btn btn-outline-primary d-md-none" onclick="toggleSidebar()">☰ Menu</button>
-    <h3>📊 Tableau de bord</h3>
+    <h3>Tableau de bord</h3>
     <div>Bonjour, <span id="userGreeting"></span> 👋</div>
 </header>
 
 <div class="mt-4">
 <div class="d-flex justify-content-between align-items-center flex-wrap">
     <div>
-        <h2>👀 Vue d'ensemble</h2>
+        <h2>Vue d'ensemble</h2>
         <p id="currentMonthLabel"></p>
     </div>
     <div class="d-flex gap-2">
         <select id="monthFilter" class="form-select">
             <option value="">Tous les mois</option>
         </select>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#quickAddModal">➕ Ajouter</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#quickAddModal"> Ajouter</button>
     </div>
 </div>
 
@@ -51,7 +51,6 @@
     <div class="col-md-6 col-lg-3 mb-3">
         <div class="card shadow-sm">
             <div class="card-body text-center">
-                <div class="kpi-icon">💵</div>
                 <h6>Total des dépenses</h6>
                 <h3 id="kpiTotal">0 DT</h3>
             </div>
@@ -60,7 +59,6 @@
     <div class="col-md-6 col-lg-3 mb-3">
         <div class="card shadow-sm">
             <div class="card-body text-center">
-                <div class="kpi-icon">🔢</div>
                 <h6>Nombre de dépenses</h6>
                 <h3 id="kpiCount">0</h3>
             </div>
@@ -69,7 +67,6 @@
     <div class="col-md-6 col-lg-3 mb-3">
         <div class="card shadow-sm">
             <div class="card-body text-center">
-                <div class="kpi-icon">📐</div>
                 <h6>Moyenne</h6>
                 <h3 id="kpiAvg">0 DT</h3>
             </div>
@@ -78,7 +75,6 @@
     <div class="col-md-6 col-lg-3 mb-3">
         <div class="card shadow-sm">
             <div class="card-body text-center">
-                <div class="kpi-icon">🏆</div>
                 <h6>Catégorie principale</h6>
                 <h3 id="kpiTop">-</h3>
             </div>
@@ -102,7 +98,7 @@
         <div class="card shadow-sm">
             <div class="card-header d-flex justify-content-between">
                 <span>🕓 Dépenses récentes</span>
-                <a href="depenses.html">Voir tout ➡️</a>
+                <a href="depenses.html">Voir tout</a>
             </div>
             <div class="card-body">
                 <div id="recentExpenses">
@@ -119,31 +115,34 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">➕ Ajouter une dépense</h5>
+                <h5 class="modal-title" id="modalTitle"> ➕ Ajouter une dépense</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">💵 Montant</label>
-                    <input type="number" id="qaAmount" class="form-control" step="0.001" min="0">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">🏷️ Catégorie</label>
-                    <select id="qaCategory" class="form-select"></select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">📅 Date</label>
-                    <input type="date" id="qaDate" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">📝 Description</label>
-                    <input type="text" id="qaDesc" class="form-control" placeholder="Description">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">❌ Annuler</button>
-                <button class="btn btn-primary" onclick="quickSave()">💾 Enregistrer</button>
-            </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="editId"/>
+                        <div class="mb-3">
+                            <label class="form-label">Montant (DT) *</label>
+                            <input type="number" id="qaAmount" class="form-control" step="0.001" min="0.001" placeholder="Ex: 25.500">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Catégorie *</label>
+                            <select id="qaCategory" class="form-select">
+                                <option value="">Choisir une catégorie...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Date *</label>
+                            <input type="date" id="qaDate" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <input type="text" id="qaDesc" class="form-control" placeholder="Description optionnelle...">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button class="btn btn-primary" onclick="quickSave()">Enregistrer</button>
+                    </div>
         </div>
     </div>
 </div>

@@ -19,7 +19,7 @@ session_start();
 $DB_HOST = 'localhost';
 $DB_NAME = 'gestion_depenses';
 $DB_USER = 'root';       // par défaut avec XAMPP/WAMP
-$DB_PASS = '';           // par défaut avec XAMPP/WAMP
+$DB_PASS = 'root';       // mot de passe MySQL root
 
 $conn = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
 

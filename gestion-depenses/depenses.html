@@ -14,21 +14,21 @@
 <div class="row">
 <!-- ================= MENU ================= -->
 <nav class="col-md-3 col-lg-2 sidebar d-none d-md-block" id="sidebar">
-    <h3 class="text-center mt-3 mb-4">💰 MonBudget</h3>
+    <h3 class="text-center mt-3 mb-4">MonBudget</h3>
     <ul class="nav flex-column">
-        <li class="nav-item"><a href="dashboard.html" class="nav-link">📊 Tableau de bord</a></li>
-        <li class="nav-item"><a href="depenses.html" class="nav-link active">🧾 Dépenses</a></li>
-        <li class="nav-item"><a href="categories.html" class="nav-link">🏷️ Catégories</a></li>
-        <li class="nav-item"><a href="graphiques.html" class="nav-link">📈 Graphiques</a></li>
+        <li class="nav-item"><a href="dashboard.html" class="nav-link">Tableau de bord</a></li>
+        <li class="nav-item"><a href="depenses.html" class="nav-link active">Dépenses</a></li>
+        <li class="nav-item"><a href="categories.html" class="nav-link">Catégories</a></li>
+        <li class="nav-item"><a href="graphiques.html" class="nav-link">Graphiques</a></li>
     </ul>
     <hr>
-    <button class="btn btn-danger w-100" onclick="App.logout()">🚪 Déconnexion</button>
+    <button class="btn btn-danger w-100" onclick="App.logout()">Déconnexion</button>
 </nav>
 <!-- ================= CONTENU ================= -->
 <main class="col-md-9 col-lg-10 main-content">
 <header class="topbar d-flex justify-content-between align-items-center">
     <button class="btn btn-outline-primary d-md-none" onclick="toggleSidebar()">☰ Menu</button>
-    <h3>🧾 Mes dépenses</h3>
+    <h3>Mes dépenses</h3>
     <div>Bonjour, <span id="userGreeting"></span> 👋</div>
 </header>
 
@@ -38,7 +38,7 @@
         <h2>Gestion des dépenses</h2>
         <p class="text-muted">Consultez, ajoutez et gérez toutes vos dépenses.</p>
     </div>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#expenseModal" onclick="openModal()">➕ Ajouter une dépense</button>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#expenseModal" onclick="openModal()">Ajouter une dépense</button>
 </div>
 
 <!-- ================= FILTRES ================= -->
@@ -70,7 +70,7 @@
 <!-- ================= TABLEAU ================= -->
 <div class="card shadow-sm">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <span>🧾 Liste des dépenses</span>
+        <span>Liste des dépenses</span>
         <span class="badge bg-primary rounded-pill" id="expenseCount">0</span>
     </div>
     <div class="card-body">
@@ -105,7 +105,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">➕ Ajouter une dépense</h5>
+                <h5 class="modal-title" id="modalTitle">Ajouter une dépense</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -131,7 +131,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button class="btn btn-primary" onclick="saveExpense()">💾 Enregistrer</button>
+                <button class="btn btn-primary" onclick="saveExpense()">Enregistrer</button>
             </div>
         </div>
     </div>

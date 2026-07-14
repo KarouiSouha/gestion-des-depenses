@@ -14,21 +14,21 @@
 <div class="row">
 <!-- ================= MENU ================= -->
 <nav class="col-md-3 col-lg-2 sidebar d-none d-md-block" id="sidebar">
-    <h3 class="text-center mt-3 mb-4">💰 MonBudget</h3>
+    <h3 class="text-center mt-3 mb-4">MonBudget</h3>
     <ul class="nav flex-column">
-        <li class="nav-item"><a href="dashboard.html" class="nav-link">📊 Tableau de bord</a></li>
-        <li class="nav-item"><a href="depenses.html" class="nav-link">🧾 Dépenses</a></li>
-        <li class="nav-item"><a href="categories.html" class="nav-link">🏷️ Catégories</a></li>
-        <li class="nav-item"><a href="graphiques.html" class="nav-link active">📈 Graphiques</a></li>
+        <li class="nav-item"><a href="dashboard.html" class="nav-link">Tableau de bord</a></li>
+        <li class="nav-item"><a href="depenses.html" class="nav-link">Dépenses</a></li>
+        <li class="nav-item"><a href="categories.html" class="nav-link">Catégories</a></li>
+        <li class="nav-item"><a href="graphiques.html" class="nav-link active">Graphiques</a></li>
     </ul>
     <hr>
-    <button class="btn btn-danger w-100" onclick="App.logout()">🚪 Déconnexion</button>
+    <button class="btn btn-danger w-100" onclick="App.logout()">Déconnexion</button>
 </nav>
 <!-- ================= CONTENU ================= -->
 <main class="col-md-9 col-lg-10 main-content">
 <header class="topbar d-flex justify-content-between align-items-center">
     <button class="btn btn-outline-primary d-md-none" onclick="toggleSidebar()">☰ Menu</button>
-    <h3>📈 Graphiques</h3>
+    <h3>Graphiques</h3>
     <div>Bonjour, <span id="userGreeting"></span> 👋</div>
 </header>
 
@@ -49,7 +49,7 @@
     <!-- Répartition par catégorie -->
     <div class="col-lg-6 mb-4">
         <div class="card shadow-sm h-100">
-            <div class="card-header">🏷️ Répartition par catégorie</div>
+            <div class="card-header">Répartition par catégorie</div>
             <div class="card-body" id="pieLegend"></div>
         </div>
     </div>
@@ -57,7 +57,7 @@
     <!-- Évolution mensuelle -->
     <div class="col-lg-6 mb-4">
         <div class="card shadow-sm h-100">
-            <div class="card-header">📊 Évolution mensuelle</div>
+            <div class="card-header">Évolution mensuelle</div>
             <div class="card-body">
                 <div class="bar-chart" id="barChart"></div>
             </div>
@@ -67,7 +67,7 @@
     <!-- Tableau récapitulatif -->
     <div class="col-12 mb-4">
         <div class="card shadow-sm">
-            <div class="card-header">📋 Récapitulatif par catégorie</div>
+            <div class="card-header">Récapitulatif par catégorie</div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered text-center align-middle">
